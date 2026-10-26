@@ -4,6 +4,9 @@ import { parseWorkbook, type ParsedWorkbook } from "@/lib/parse";
 import { runEngine, diffResults, CITY_REF } from "@/lib/engine";
 import { keywordInsight } from "@/lib/text";
 import { CONFIG } from "@/lib/config";
+import StorefrontHero from "./components/StorefrontHero";
+import CoverageShowroom from "./components/CoverageShowroom";
+import ScoreTicker from "./components/ScoreTicker";
 import ref from "@/lib/data/reference.json";
 import type { Decision, EngineResult, Patch, RawApplication, TextInsight } from "@/lib/types";
 
@@ -160,38 +163,21 @@ export default function Home() {
     <input ref={fileRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = ""; }} />
 
     {!wb && <main className="landing">
-      <section className="hero">
-        <div className="glow g1" /><div className="glow g2" /><div className="grid-bg" />
-        <div className="hero-in">
-          <div className="hero-l rise">
-            <span className="pill"><span className="dot" />Franchise expansion, on autopilot</span>
-            <div className="greet" lang="kn">Namaskara · ನಮಸ್ಕಾರ</div>
-            <h1 className="hero-t g">The right partners.<br />The right pin codes.<br /><em>Open stores faster.</em></h1>
-            <p className="hero-s">Upload your applications sheet and PartnerScope screens every applicant, fills each territory slot by slot, guards against cannibalisation, and hands every approved partner a week-by-week launch plan &mdash; in Kannada, Hindi or English.</p>
-            <div className="hero-cta"><button className="btn aqua lg" onClick={() => loadSample("test_1_mixed_traps.xlsx")}>See it decide in 10 seconds <Icon n="arrow" /></button><button className="btn glass lg" onClick={() => fileRef.current?.click()}><Icon n="upload" />Upload your Excel</button></div>
-            <div className="trust">{[["shield", "1 store per pin, guaranteed"], ["check", "Every decision explained"], ["globe", "ಕನ್ನಡ · हिंदी · English"]].map(([i, t]) => <span key={t}><Icon n={i} />{t}</span>)}</div>
-          </div>
-          <div className="hero-r rise d2">
-            <div className="upcard">
-              <div className="upcard-h"><span className="lights"><i /><i /><i /></span><span>New intake</span></div>
-              <div className={"drop" + (over ? " over" : "")} onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); onFile(e.dataTransfer.files[0]); }} onClick={() => fileRef.current?.click()}>
-                <div className="drop-ic"><Icon n="file" /></div>
-                <b>Drop the filled-in template</b>
-                <div className="muted">.xlsx with <i>Applications</i> &amp; <i>Territories</i> sheets. The 10 existing stores are built in.</div>
-              </div>
-              <div className="or"><span>or explore a sample</span></div>
-              <div className="samples">
-                {[["test_1_mixed_traps.xlsx", "Mixed traps", "Contradictions, missing sites, example row"], ["test_2_dirty_data.xlsx", "Dirty data", "Typos, ₹ amounts, odd pins, no store sheet"], ["test_3_competition.xlsx", "Slot competition", "Many applicants chasing few slots"]].map(([f, t, d], i) => <button key={f} className="sample" onClick={() => loadSample(f)}><span className="sn">0{i + 1}</span><span><b>{t}</b><small>{d}</small></span><Icon n="arrow" /></button>)}
-              </div>
-              {busy && <div className="busy"><span className="spin" />{busy}</div>}
-            </div>
-            <div className="float f1"><span className="chip c-Approved">Approved</span><b>Fit score 82/100</b><small>Ranked #1 of 2 slots in a High-priority territory</small></div>
-            <div className="float f2"><span className="chip c-On">On hold</span><b>“Still looking for a shop”</b><small>Ask: confirm a site before fit-out</small></div>
-          </div>
+      <StorefrontHero onUploadClick={() => fileRef.current?.click()} onSampleClick={() => loadSample("test_1_mixed_traps.xlsx")}>
+      <div className="upcard">
+        <div className="upcard-h"><span className="lights"><i /><i /><i /></span><span>New intake</span></div>
+        <div className={"drop" + (over ? " over" : "")} onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={(e) => { e.preventDefault(); setOver(false); onFile(e.dataTransfer.files[0]); }} onClick={() => fileRef.current?.click()}>
+          <div className="drop-ic"><Icon n="file" /></div>
+          <b>Drop the filled-in template</b>
+          <div className="muted">.xlsx with <i>Applications</i> &amp; <i>Territories</i> sheets. The 10 existing stores are built in.</div>
         </div>
-      </section>
-
-      <section className="stats">{[["<10s", "from upload to a decision for every applicant"], ["100%", "of decisions carry reasons & evidence"], ["0", "pin codes ever double-booked"], ["3", "training languages, chosen by the partner"]].map(([n, t]) => <div key={t} className="stat"><b>{n}</b><span>{t}</span></div>)}</section>
+        <div className="or"><span>or explore a sample</span></div>
+        <div className="samples">
+          {[["test_1_mixed_traps.xlsx", "Mixed traps", "Contradictions, missing sites, example row"], ["test_2_dirty_data.xlsx", "Dirty data", "Typos, ₹ amounts, odd pins, no store sheet"], ["test_3_competition.xlsx", "Slot competition", "Many applicants chasing few slots"]].map(([f, t, d], i) => <button key={f} className="sample" onClick={() => loadSample(f)}><span className="sn">0{i + 1}</span><span><b>{t}</b><small>{d}</small></span><Icon n="arrow" /></button>)}
+        </div>
+        {busy && <div className="busy"><span className="spin" />{busy}</div>}
+      </div>
+      </StorefrontHero>
 
       <section id="how" className="sec">
         <div className="sec-h"><span className="eyebrow">How it works</span><h2>From a messy spreadsheet to opened stores</h2><p>Three steps that take the partner journey off the expansion team&rsquo;s plate.</p></div>
@@ -209,10 +195,7 @@ export default function Home() {
           <div className="minfit">{Object.entries(CONFIG.minFitByPriority).map(([p, v]) => <span key={p}><b>{v}+</b> to win a {p}-priority slot</span>)}</div></div>
       </section>
 
-      <section id="cities" className="sec">
-        <div className="sec-h"><span className="eyebrow">Coverage</span><h2>Seven Karnataka cities, three tiers</h2><p>Investment floors and benchmarks are tuned to each tier.</p></div>
-        <div className="cities">{[["Bengaluru", "Tier 1", "560"], ["Mysuru", "Tier 2", "570"], ["Mangaluru", "Tier 2", "575"], ["Hubballi-Dharwad", "Tier 2", "580"], ["Belagavi", "Tier 2", "590"], ["Tumakuru", "Tier 3", "572"], ["Davanagere", "Tier 3", "577"]].map(([c, t, p]) => { const s = CITY_REF.find((x) => x.city === c); return <div key={c} className="city"><div className="city-top"><b>{c}</b><span className={"tier t" + t.slice(-1)}>{t}</span></div><small>Pins {p}xxx · {s?.existing_store_count ?? 0} store{s?.existing_store_count === "1" ? "" : "s"} today</small><div className="floor">Min. investment <b>₹{CONFIG.investmentFloorLakh[t]} lakh</b></div></div>; })}</div>
-      </section>
+      <CoverageShowroom />
 
       <section id="faq" className="sec alt">
         <div className="sec-h"><span className="eyebrow">Method</span><h2>Transparent by design</h2></div>
@@ -235,10 +218,10 @@ export default function Home() {
         <div className="layout">
           <div>
             <div className="tabs">{[["overview", "Overview", "gauge"], ["decisions", "Applicants", "list"], ["territories", "Territories", "map"], ["onboarding", "Onboarding", "rocket"], ["log", `Change log · ${log.length}`, "clock"], ["assumptions", "Method & sources", "book"]].map(([k, l, i]) => <button key={k} className={"tab" + (tab === k ? " on" : "")} onClick={() => setTab(k)}><Icon n={i} />{l}</button>)}</div>
-            {tab === "decisions" && <div className="card flush">
+            {tab === "decisions" && <div className="card flush ledger-card">
               <div className="toolbar"><div className="search"><Icon n="search" /><input placeholder="Search ID, name, city, pin or territory" value={q} onChange={(e) => setQ(e.target.value)} /></div><select value={filter} onChange={(e) => setFilter(e.target.value)}><option>All</option>{STATUSES.map((s) => <option key={s}>{s}</option>)}</select><span className="count">{shown.length} shown</span></div>
-              <div className="tablewrap"><table><thead><tr><th>Applicant</th><th>Location</th><th>Territory</th><th>Status</th><th>Fit</th><th>Why</th></tr></thead><tbody>
-                {shown.map((d) => <tr key={d.id} className="click" onClick={() => setSel(d)}><td><div className="who"><span className={"av2 a-" + statusOf(d.status)}>{initials(d.name)}</span><div><b>{d.name || "—"}</b><div className="id">{d.id}</div></div></div></td><td>{d.city || "—"}<div className="muted">{d.pin}</div></td><td className="id">{d.territoryId || "—"}</td><td><span className={chipCls(d.status)}>{d.status}{d.waitlistRank ? ` #${d.waitlistRank}` : ""}</span>{d.bumpFlag && <div className="flag">⚑ Needs review</div>}</td><td>{d.score ? <span className={"sc" + scoreCls(d.score.total)}>{d.score.total}</span> : <span className="muted">—</span>}</td><td className="why">{d.headline}{d.question && <div className="ask"><Icon n="chat" />{d.question}</div>}</td></tr>)}
+              <div className="tablewrap"><table className="ledger-t"><thead><tr><th>Applicant</th><th>Location</th><th>Territory</th><th>Status</th><th>Fit</th><th>Why</th></tr></thead><tbody>
+                {shown.map((d) => <tr key={d.id} className="click" onClick={() => setSel(d)}><td><div className="who"><span className={"av2 a-" + statusOf(d.status)}>{initials(d.name)}</span><div><b>{d.name || "—"}</b><div className="id">{d.id}</div></div></div></td><td>{d.city || "—"}<div className="muted">{d.pin}</div></td><td className="id">{d.territoryId || "—"}</td><td><span className={chipCls(d.status)}>{d.status}{d.waitlistRank ? ` #${d.waitlistRank}` : ""}</span>{d.bumpFlag && <div className="flag">⚑ Needs review</div>}</td><td>{d.score ? <ScoreTicker className={"sc" + scoreCls(d.score.total)} value={d.score.total} /> : <span className="muted">—</span>}</td><td className="why">{d.headline}{d.question && <div className="ask"><Icon n="chat" />{d.question}</div>}</td></tr>)}
                 {!shown.length && <tr><td colSpan={6}><div className="empty"><div className="empty-ic"><Icon n="search" /></div><b>No applicants match</b><div className="muted">Try another status or clear the search.</div><button className="btn ghost" style={{ marginTop: 12 }} onClick={() => { setFilter("All"); setQ(""); }}>Clear filters</button></div></td></tr>}
               </tbody></table></div></div>}
             {tab === "territories" && <div className="tercards">{result.territories.map((t) => <div key={t.id} className="tercard"><div className="tc-h"><span className="id">{t.id}</span><span className={"prio p-" + t.priority}>{t.priority}</span></div><b className="tc-city">{t.city}</b><span className="muted">{t.tier} · {t.pins.length} pin{t.pins.length === 1 ? "" : "s"}</span><div className="slotbar">{Array.from({ length: Math.max(t.slots, 1) }).map((_, i) => <i key={i} className={i < t.filled ? "f" : ""} />)}</div><div className="tc-f"><span><b>{t.filled}</b> / {t.slots} filled</span>{t.waitlisted.length > 0 && <span className="muted">{t.waitlisted.length} waitlisted</span>}</div>{t.approved.length > 0 && <div className="tc-ids">{t.approved.map((id) => <button key={id} className="mini" onClick={() => { const d = result.decisions.find((x) => x.id === id); if (d) setSel(d); }}>{id}</button>)}</div>}</div>)}</div>}
