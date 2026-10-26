@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   }
   let model = "cache";
   const chunks: (typeof items)[] = [];
-  for (let i = 0; i < todo.length; i += 25) chunks.push(todo.slice(i, i + 25));
+  for (let i = 0; i < todo.length; i += 8) chunks.push(todo.slice(i, i + 8));
   await Promise.all(chunks.map(async (chunk) => {
     const prompt = `You read franchise applications for a branded retail showroom (eyewear-style) in Karnataka. Text may be English, Kannada, Hindi or transliterated Kannada or Hindi. For EACH item extract ONLY what is literally stated; quotes must be exact substrings of the input. Do not guess.
 - background: from "business" — direct_retail (runs/ran a shop, store, retail or optical business themselves), adjacent (customer-facing service/sales business like pharmacy, salon, distribution, sales job), unrelated (IT job, farming, teacher, student, etc.), unknown (blank/unclear).
